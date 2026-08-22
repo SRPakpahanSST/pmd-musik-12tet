@@ -2919,7 +2919,7 @@ Hasilkan notasi nada:`;
             updateTranscriptionDisplay();
         });
 
-        // ===== PLAY RESULT - DENGAN TEMPO NORMAL =====
+        // ===== PLAY RESULT - DENGAN VOLUME MAKSIMAL =====
 playResultBtn.addEventListener('click', async function() {
     if (isTranscriberPlaying) {
         transcribePlayTimeouts.forEach(t => clearTimeout(t));
@@ -2936,68 +2936,63 @@ playResultBtn.addEventListener('click', async function() {
     }
 
     try {
+        // Buat AudioContext dan resume jika suspended
         const ctx = new(window.AudioContext || window.webkitAudioContext)();
         if (ctx.state === 'suspended') {
             await ctx.resume();
             console.log('✅ AudioContext resumed');
         }
 
+        // Cek apakah ada nada yang valid
         const validNotes = detectedNotes.filter(n => n.freq > 20 && n.freq < 20000);
         if (validNotes.length === 0) {
             statusEl.textContent = '⚠️ Tidak ada nada valid untuk diputar.';
             return;
         }
 
-        // === MASTER GAIN ===
+        // === MASTER GAIN UNTUK KONTROL VOLUME GLOBAL ===
         const masterGain = ctx.createGain();
-        masterGain.gain.setValueAtTime(2.0, ctx.currentTime);
+        masterGain.gain.setValueAtTime(2.0, ctx.currentTime); // MAKSIMUM 2.0
         masterGain.connect(ctx.destination);
 
-        // === TEMPO NORMAL: 120 BPM (0.5 detik per nada) ===
-        const TEMPO_BPM = 120;
-        const INTERVAL = 60 / TEMPO_BPM; // 0.5 detik per nada
-        const DURATION = INTERVAL * 0.8; // Durasi nada 80% dari interval
-
-        // Mulai dari waktu sekarang
-        let startTime = ctx.currentTime + 0.1;
-
+        // Mainkan nada dengan volume maksimal
         validNotes.forEach((item, index) => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             
-            // Gunakan waveform bergantian untuk variasi
+            // Gunakan waveform yang lebih kaya
             if (index % 2 === 0) {
-                osc.type = 'sine';
+                osc.type = 'sine';      // Nada lembut
             } else {
-                osc.type = 'triangle';
+                osc.type = 'triangle';  // Nada lebih kaya
             }
             osc.frequency.setValueAtTime(item.freq, ctx.currentTime);
 
-            // === ENVELOPE ===
-            const now = startTime + (index * INTERVAL);
-            const attack = 0.01;
+            // === ENVELOPE DENGAN VOLUME MAKSIMAL ===
+            const now = ctx.currentTime + item.time;
+            const attack = 0.01;        // Sangat cepat
             const decay = 0.05;
-            const sustain = 0.8;
-            const release = 0.05;
+            const sustain = 0.8;        // Volume sustain maksimal
+            const release = 0.1;
+            const duration = 0.4;
 
             gain.gain.setValueAtTime(0.001, now);
-            gain.gain.linearRampToValueAtTime(1.0, now + attack);
+            gain.gain.linearRampToValueAtTime(1.0, now + attack);     // Attack ke 1.0
             gain.gain.exponentialRampToValueAtTime(sustain, now + attack + decay);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + DURATION - release);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration - release);
 
             osc.connect(gain);
             gain.connect(masterGain);
 
             osc.start(now);
-            osc.stop(now + DURATION);
+            osc.stop(now + duration);
         });
 
         isTranscriberPlaying = true;
         playResultBtn.textContent = '⏹ Stop';
-        const totalNotes = validNotes.length;
-        const totalTime = totalNotes * INTERVAL + 0.3;
-        statusEl.innerHTML = `🎵 Memutar ${totalNotes} nada dengan tempo ${TEMPO_BPM} BPM...`;
+        statusEl.innerHTML = `🔊 Memutar ${validNotes.length} nada dengan volume MAKSIMAL...`;
 
+        const totalTime = validNotes[validNotes.length - 1].time + 0.6;
         const timeout = setTimeout(() => {
             isTranscriberPlaying = false;
             playResultBtn.textContent = '▶ Play Hasil';
