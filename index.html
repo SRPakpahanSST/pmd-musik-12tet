@@ -2919,75 +2919,89 @@ Hasilkan notasi nada:`;
             updateTranscriptionDisplay();
         });
 
-        // ===== PLAY RESULT - DIPERBAIKI =====
-        playResultBtn.addEventListener('click', async function() {
-            if (isTranscriberPlaying) {
-                transcribePlayTimeouts.forEach(t => clearTimeout(t));
-                transcribePlayTimeouts = [];
-                isTranscriberPlaying = false;
-                playResultBtn.textContent = '▶ Play Hasil';
-                statusEl.textContent = '⏹ Pemutaran dihentikan.';
-                return;
-            }
+        // ===== PLAY RESULT - DENGAN VOLUME LEBIH KERAS =====
+playResultBtn.addEventListener('click', async function() {
+    if (isTranscriberPlaying) {
+        transcribePlayTimeouts.forEach(t => clearTimeout(t));
+        transcribePlayTimeouts = [];
+        isTranscriberPlaying = false;
+        playResultBtn.textContent = '▶ Play Hasil';
+        statusEl.textContent = '⏹ Pemutaran dihentikan.';
+        return;
+    }
 
-            if (detectedNotes.length === 0) {
-                statusEl.textContent = '⚠️ Tidak ada nada yang terdeteksi. Rekam suara terlebih dahulu!';
-                return;
-            }
+    if (detectedNotes.length === 0) {
+        statusEl.textContent = '⚠️ Tidak ada nada yang terdeteksi. Rekam suara terlebih dahulu!';
+        return;
+    }
 
-            try {
-                // Buat AudioContext dan resume jika suspended
-                const ctx = new(window.AudioContext || window.webkitAudioContext)();
-                if (ctx.state === 'suspended') {
-                    await ctx.resume();
-                    console.log('✅ AudioContext resumed');
-                }
+    try {
+        // Buat AudioContext dan resume jika suspended
+        const ctx = new(window.AudioContext || window.webkitAudioContext)();
+        if (ctx.state === 'suspended') {
+            await ctx.resume();
+            console.log('✅ AudioContext resumed');
+        }
 
-                // Cek apakah ada nada yang valid
-                const validNotes = detectedNotes.filter(n => n.freq > 20 && n.freq < 20000);
-                if (validNotes.length === 0) {
-                    statusEl.textContent = '⚠️ Tidak ada nada valid untuk diputar.';
-                    return;
-                }
+        // Cek apakah ada nada yang valid
+        const validNotes = detectedNotes.filter(n => n.freq > 20 && n.freq < 20000);
+        if (validNotes.length === 0) {
+            statusEl.textContent = '⚠️ Tidak ada nada valid untuk diputar.';
+            return;
+        }
 
-                // Mainkan nada
-                validNotes.forEach((item, index) => {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(item.freq, ctx.currentTime);
+        // === MASTER GAIN UNTUK KONTROL VOLUME GLOBAL ===
+        const masterGain = ctx.createGain();
+        masterGain.gain.setValueAtTime(1.2, ctx.currentTime); // Bisa diatur 1.0 - 2.0
+        masterGain.connect(ctx.destination);
 
-                    gain.gain.setValueAtTime(0.3, ctx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+        // Mainkan nada dengan volume lebih keras
+        validNotes.forEach((item, index) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(item.freq, ctx.currentTime);
 
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
+            // === ENVELOPE DENGAN VOLUME LEBIH KERAS ===
+            const now = ctx.currentTime + item.time;
+            const attack = 0.02;
+            const decay = 0.08;
+            const sustain = 0.6;  // Volume sustain lebih keras
+            const release = 0.15;
+            const duration = 0.35;
 
-                    const startTime = ctx.currentTime + item.time;
-                    osc.start(startTime);
-                    osc.stop(startTime + 0.3);
-                });
+            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.linearRampToValueAtTime(0.9, now + attack);
+            gain.gain.exponentialRampToValueAtTime(sustain, now + attack + decay);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration - release);
 
-                isTranscriberPlaying = true;
-                playResultBtn.textContent = '⏹ Stop';
-                statusEl.innerHTML = `🎵 Memutar ${validNotes.length} nada...`;
+            osc.connect(gain);
+            gain.connect(masterGain);  // Connect ke master gain
 
-                const totalTime = validNotes[validNotes.length - 1].time + 0.5;
-                const timeout = setTimeout(() => {
-                    isTranscriberPlaying = false;
-                    playResultBtn.textContent = '▶ Play Hasil';
-                    statusEl.innerHTML = '✅ Pemutaran selesai.';
-                    if (ctx.state !== 'closed') ctx.close();
-                }, totalTime * 1000 + 300);
-                transcribePlayTimeouts.push(timeout);
-
-            } catch (error) {
-                console.error('❌ Error saat play:', error);
-                statusEl.textContent = '❌ Gagal memutar: ' + error.message;
-                playResultBtn.textContent = '▶ Play Hasil';
-                isTranscriberPlaying = false;
-            }
+            osc.start(now);
+            osc.stop(now + duration);
         });
+
+        isTranscriberPlaying = true;
+        playResultBtn.textContent = '⏹ Stop';
+        statusEl.innerHTML = `🎵 Memutar ${validNotes.length} nada dengan volume lebih keras...`;
+
+        const totalTime = validNotes[validNotes.length - 1].time + 0.5;
+        const timeout = setTimeout(() => {
+            isTranscriberPlaying = false;
+            playResultBtn.textContent = '▶ Play Hasil';
+            statusEl.innerHTML = '✅ Pemutaran selesai.';
+            if (ctx.state !== 'closed') ctx.close();
+        }, totalTime * 1000 + 300);
+        transcribePlayTimeouts.push(timeout);
+
+    } catch (error) {
+        console.error('❌ Error saat play:', error);
+        statusEl.textContent = '❌ Gagal memutar: ' + error.message;
+        playResultBtn.textContent = '▶ Play Hasil';
+        isTranscriberPlaying = false;
+    }
+});
 
         sendToChordBtn.addEventListener('click', function() {
             if (detectedNotes.length === 0) return;
