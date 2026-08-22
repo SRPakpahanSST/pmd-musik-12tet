@@ -1291,43 +1291,51 @@
 
     <script>
         // ================================================================
-// SPLASH → APP (DIPERBAIKI)
-// ================================================================
-const welcome = document.getElementById('welcome');
-const app = document.getElementById('app');
-const startBtn = document.getElementById('startBtn');
+        // SPLASH → APP (DIPERBAIKI DENGAN FALLBACK)
+        // ================================================================
+        const welcome = document.getElementById('welcome');
+        const app = document.getElementById('app');
+        const startBtn = document.getElementById('startBtn');
 
-// Validasi: pastikan tombol ditemukan
-if (!startBtn) {
-    console.error('❌ Tombol "Mulai" tidak ditemukan!');
-} else {
-    console.log('✅ Tombol "Mulai" ditemukan');
-    
-    startBtn.addEventListener('click', function(e) {
-        console.log('🖱️ Tombol Mulai diklik');
-        try {
-            // Sembunyikan welcome, tampilkan app
-            welcome.classList.add('hidden');
-            app.classList.add('show');
-            console.log('✅ Aplikasi dimulai');
+        // Validasi: pastikan tombol ditemukan
+        if (!startBtn) {
+            console.error('❌ Tombol "Mulai" tidak ditemukan!');
+        } else {
+            console.log('✅ Tombol "Mulai" ditemukan');
             
-            // Inisialisasi audio
-            if (typeof initAudio === 'function') {
-                initAudio();
-            }
-        } catch (error) {
-            console.error('❌ Error saat memulai:', error);
-            alert('Terjadi kesalahan: ' + error.message);
+            startBtn.addEventListener('click', function(e) {
+                console.log('🖱️ Tombol Mulai diklik');
+                try {
+                    // Sembunyikan welcome, tampilkan app
+                    welcome.classList.add('hidden');
+                    app.classList.add('show');
+                    console.log('✅ Aplikasi dimulai');
+                    
+                    // Inisialisasi audio
+                    if (typeof initAudio === 'function') {
+                        initAudio();
+                    }
+                } catch (error) {
+                    console.error('❌ Error saat memulai:', error);
+                    alert('Terjadi kesalahan: ' + error.message);
+                }
+            });
         }
-    });
-}
 
-// Fallback: tekan Enter untuk mulai
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' && !welcome.classList.contains('hidden')) {
-        startBtn.click();
-    }
-});
+        // Fallback 1: tekan Enter untuk mulai
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && startBtn && !welcome.classList.contains('hidden')) {
+                startBtn.click();
+            }
+        });
+
+        // Fallback 2: auto-start setelah 3 detik jika tombol tidak diklik (opsional)
+        // setTimeout(() => {
+        //     if (startBtn && !app.classList.contains('show')) {
+        //         console.warn('⚠️ Auto-start dalam 3 detik...');
+        //         startBtn.click();
+        //     }
+        // }, 3000);
 
         // ================================================================
         // TAB NAVIGASI
@@ -2562,7 +2570,7 @@ Hasilkan notasi nada:`;
         });
 
         // ================================================================
-        // AI TRANSCRIBER — LOGIKA LENGKAP
+        // AI TRANSCRIBER — LOGIKA LENGKAP (DIPERBAIKI)
         // ================================================================
         let transcriberCtx = null;
         let transcriberAnalyser = null;
@@ -2903,7 +2911,6 @@ Hasilkan notasi nada:`;
         });
 
         transcribeBtn.addEventListener('click', function() {
-            // Sebenarnya tombol ini hanya untuk info, karena transkripsi sudah real-time
             if (detectedNotes.length === 0) {
                 statusEl.textContent = '⚠️ Belum ada nada yang terdeteksi. Coba rekam suara/instrumen.';
                 return;
@@ -2912,84 +2919,74 @@ Hasilkan notasi nada:`;
             updateTranscriptionDisplay();
         });
 
+        // ===== PLAY RESULT - DIPERBAIKI =====
         playResultBtn.addEventListener('click', async function() {
-    if (isTranscriberPlaying) {
-        transcribePlayTimeouts.forEach(t => clearTimeout(t));
-        transcribePlayTimeouts = [];
-        isTranscriberPlaying = false;
-        playResultBtn.textContent = '▶ Play Hasil';
-        return;
-    }
-
-    if (detectedNotes.length === 0) {
-        statusEl.textContent = '⚠️ Tidak ada nada yang terdeteksi. Rekam suara terlebih dahulu!';
-        return;
-    }
-
-    try {
-        // Buat AudioContext dan resume jika suspended
-        const ctx = new(window.AudioContext || window.webkitAudioContext)();
-        if (ctx.state === 'suspended') {
-            await ctx.resume();
-            console.log('✅ AudioContext resumed');
-        }
-
-        // Cek apakah ada nada yang valid
-        const validNotes = detectedNotes.filter(n => n.freq > 20 && n.freq < 20000);
-        if (validNotes.length === 0) {
-            statusEl.textContent = '⚠️ Tidak ada nada valid untuk diputar.';
-            return;
-        }
-
-        // Mainkan nada
-        validNotes.forEach((item, index) => {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(item.freq, ctx.currentTime);
-
-            gain.gain.setValueAtTime(0.3, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-
-            const startTime = ctx.currentTime + item.time;
-            osc.start(startTime);
-            osc.stop(startTime + 0.3);
-        });
-
-        isTranscriberPlaying = true;
-        playResultBtn.textContent = '⏹ Stop';
-        statusEl.innerHTML = `🎵 Memutar ${validNotes.length} nada...`;
-
-        const totalTime = validNotes[validNotes.length - 1].time + 0.5;
-        const timeout = setTimeout(() => {
-            isTranscriberPlaying = false;
-            playResultBtn.textContent = '▶ Play Hasil';
-            statusEl.innerHTML = '✅ Pemutaran selesai.';
-            if (ctx.state !== 'closed') ctx.close();
-        }, totalTime * 1000 + 300);
-        transcribePlayTimeouts.push(timeout);
-
-    } catch (error) {
-        console.error('❌ Error saat play:', error);
-        statusEl.textContent = '❌ Gagal memutar: ' + error.message;
-        playResultBtn.textContent = '▶ Play Hasil';
-        isTranscriberPlaying = false;
-    }
-});
-
-            isTranscriberPlaying = true;
-            playResultBtn.textContent = '⏹ Stop';
-
-            const totalTime = detectedNotes[detectedNotes.length - 1].time + 0.3;
-            const timeout = setTimeout(() => {
+            if (isTranscriberPlaying) {
+                transcribePlayTimeouts.forEach(t => clearTimeout(t));
+                transcribePlayTimeouts = [];
                 isTranscriberPlaying = false;
                 playResultBtn.textContent = '▶ Play Hasil';
-                if (ctx.state !== 'closed') ctx.close();
-            }, totalTime * 1000 + 200);
-            transcribePlayTimeouts.push(timeout);
+                statusEl.textContent = '⏹ Pemutaran dihentikan.';
+                return;
+            }
+
+            if (detectedNotes.length === 0) {
+                statusEl.textContent = '⚠️ Tidak ada nada yang terdeteksi. Rekam suara terlebih dahulu!';
+                return;
+            }
+
+            try {
+                // Buat AudioContext dan resume jika suspended
+                const ctx = new(window.AudioContext || window.webkitAudioContext)();
+                if (ctx.state === 'suspended') {
+                    await ctx.resume();
+                    console.log('✅ AudioContext resumed');
+                }
+
+                // Cek apakah ada nada yang valid
+                const validNotes = detectedNotes.filter(n => n.freq > 20 && n.freq < 20000);
+                if (validNotes.length === 0) {
+                    statusEl.textContent = '⚠️ Tidak ada nada valid untuk diputar.';
+                    return;
+                }
+
+                // Mainkan nada
+                validNotes.forEach((item, index) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(item.freq, ctx.currentTime);
+
+                    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    const startTime = ctx.currentTime + item.time;
+                    osc.start(startTime);
+                    osc.stop(startTime + 0.3);
+                });
+
+                isTranscriberPlaying = true;
+                playResultBtn.textContent = '⏹ Stop';
+                statusEl.innerHTML = `🎵 Memutar ${validNotes.length} nada...`;
+
+                const totalTime = validNotes[validNotes.length - 1].time + 0.5;
+                const timeout = setTimeout(() => {
+                    isTranscriberPlaying = false;
+                    playResultBtn.textContent = '▶ Play Hasil';
+                    statusEl.innerHTML = '✅ Pemutaran selesai.';
+                    if (ctx.state !== 'closed') ctx.close();
+                }, totalTime * 1000 + 300);
+                transcribePlayTimeouts.push(timeout);
+
+            } catch (error) {
+                console.error('❌ Error saat play:', error);
+                statusEl.textContent = '❌ Gagal memutar: ' + error.message;
+                playResultBtn.textContent = '▶ Play Hasil';
+                isTranscriberPlaying = false;
+            }
         });
 
         sendToChordBtn.addEventListener('click', function() {
@@ -2998,7 +2995,6 @@ Hasilkan notasi nada:`;
             const chordInput = document.getElementById('chordInput');
             if (chordInput) {
                 chordInput.value = noteNames;
-                // Pindah ke tab chord
                 document.querySelector('.tab-btn-nav[data-tab="chord"]')?.click();
                 statusEl.innerHTML = '✅ Data dikirim ke Chord Progression! Klik "Generate Progresi" untuk melihat hasil.';
             }
