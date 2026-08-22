@@ -2919,7 +2919,7 @@ Hasilkan notasi nada:`;
             updateTranscriptionDisplay();
         });
 
-        // ===== PLAY RESULT - DENGAN VOLUME MAKSIMAL =====
+        // ===== PLAY RESULT - DENGAN TEMPO NORMAL =====
 playResultBtn.addEventListener('click', async function() {
     if (isTranscriberPlaying) {
         transcribePlayTimeouts.forEach(t => clearTimeout(t));
@@ -2936,57 +2936,83 @@ playResultBtn.addEventListener('click', async function() {
     }
 
     try {
-        // Buat AudioContext dan resume jika suspended
         const ctx = new(window.AudioContext || window.webkitAudioContext)();
         if (ctx.state === 'suspended') {
             await ctx.resume();
             console.log('✅ AudioContext resumed');
         }
 
-        // Cek apakah ada nada yang valid
         const validNotes = detectedNotes.filter(n => n.freq > 20 && n.freq < 20000);
         if (validNotes.length === 0) {
             statusEl.textContent = '⚠️ Tidak ada nada valid untuk diputar.';
             return;
         }
 
-        // === MASTER GAIN UNTUK KONTROL VOLUME GLOBAL ===
+        // === MASTER GAIN ===
         const masterGain = ctx.createGain();
-        masterGain.gain.setValueAtTime(2.0, ctx.currentTime); // MAKSIMUM 2.0
+        masterGain.gain.setValueAtTime(2.0, ctx.currentTime);
         masterGain.connect(ctx.destination);
 
-        // Mainkan nada dengan volume maksimal
+        // === TEMPO NORMAL: 120 BPM (0.5 detik per nada) ===
+        const TEMPO_BPM = 120;
+        const INTERVAL = 60 / TEMPO_BPM; // 0.5 detik per nada
+        const DURATION = INTERVAL * 0.8; // Durasi nada 80% dari interval
+
+        // Mulai dari waktu sekarang
+        let startTime = ctx.currentTime + 0.1;
+
         validNotes.forEach((item, index) => {
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
             
-            // Gunakan waveform yang lebih kaya
+            // Gunakan waveform bergantian untuk variasi
             if (index % 2 === 0) {
-                osc.type = 'sine';      // Nada lembut
+                osc.type = 'sine';
             } else {
-                osc.type = 'triangle';  // Nada lebih kaya
+                osc.type = 'triangle';
             }
             osc.frequency.setValueAtTime(item.freq, ctx.currentTime);
 
-            // === ENVELOPE DENGAN VOLUME MAKSIMAL ===
-            const now = ctx.currentTime + item.time;
-            const attack = 0.01;        // Sangat cepat
+            // === ENVELOPE ===
+            const now = startTime + (index * INTERVAL);
+            const attack = 0.01;
             const decay = 0.05;
-            const sustain = 0.8;        // Volume sustain maksimal
-            const release = 0.1;
-            const duration = 0.4;
+            const sustain = 0.8;
+            const release = 0.05;
 
             gain.gain.setValueAtTime(0.001, now);
-            gain.gain.linearRampToValueAtTime(1.0, now + attack);     // Attack ke 1.0
+            gain.gain.linearRampToValueAtTime(1.0, now + attack);
             gain.gain.exponentialRampToValueAtTime(sustain, now + attack + decay);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + duration - release);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + DURATION - release);
 
             osc.connect(gain);
             gain.connect(masterGain);
 
             osc.start(now);
-            osc.stop(now + duration);
+            osc.stop(now + DURATION);
         });
+
+        isTranscriberPlaying = true;
+        playResultBtn.textContent = '⏹ Stop';
+        const totalNotes = validNotes.length;
+        const totalTime = totalNotes * INTERVAL + 0.3;
+        statusEl.innerHTML = `🎵 Memutar ${totalNotes} nada dengan tempo ${TEMPO_BPM} BPM...`;
+
+        const timeout = setTimeout(() => {
+            isTranscriberPlaying = false;
+            playResultBtn.textContent = '▶ Play Hasil';
+            statusEl.innerHTML = '✅ Pemutaran selesai.';
+            if (ctx.state !== 'closed') ctx.close();
+        }, totalTime * 1000 + 300);
+        transcribePlayTimeouts.push(timeout);
+
+    } catch (error) {
+        console.error('❌ Error saat play:', error);
+        statusEl.textContent = '❌ Gagal memutar: ' + error.message;
+        playResultBtn.textContent = '▶ Play Hasil';
+        isTranscriberPlaying = false;
+    }
+});
 
         isTranscriberPlaying = true;
         playResultBtn.textContent = '⏹ Stop';
