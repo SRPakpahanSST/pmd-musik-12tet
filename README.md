@@ -12,6 +12,8 @@ https://img.shields.io/badge/License-MIT-green
 
 Akses aplikasi di: https://srpakpahansst.github.io/pmd-musik-12tet/
 
+Tempelkan URL Link Aplikasi ke Browser Anda. Jangan langsung URL di klik karena nanti tidak bisa membuka Tombol "Mulai"
+
 https://srpakpahansst.github.io/pmd-musik-12tet/
 
 📖 Tentang Aplikasi
