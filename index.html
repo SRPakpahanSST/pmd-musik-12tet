@@ -1291,17 +1291,43 @@
 
     <script>
         // ================================================================
-        // SPLASH → APP
-        // ================================================================
-        const welcome = document.getElementById('welcome');
-        const app = document.getElementById('app');
-        const startBtn = document.getElementById('startBtn');
+// SPLASH → APP (DIPERBAIKI)
+// ================================================================
+const welcome = document.getElementById('welcome');
+const app = document.getElementById('app');
+const startBtn = document.getElementById('startBtn');
 
-        startBtn.addEventListener('click', function() {
+// Validasi: pastikan tombol ditemukan
+if (!startBtn) {
+    console.error('❌ Tombol "Mulai" tidak ditemukan!');
+} else {
+    console.log('✅ Tombol "Mulai" ditemukan');
+    
+    startBtn.addEventListener('click', function(e) {
+        console.log('🖱️ Tombol Mulai diklik');
+        try {
+            // Sembunyikan welcome, tampilkan app
             welcome.classList.add('hidden');
             app.classList.add('show');
-            initAudio();
-        });
+            console.log('✅ Aplikasi dimulai');
+            
+            // Inisialisasi audio
+            if (typeof initAudio === 'function') {
+                initAudio();
+            }
+        } catch (error) {
+            console.error('❌ Error saat memulai:', error);
+            alert('Terjadi kesalahan: ' + error.message);
+        }
+    });
+}
+
+// Fallback: tekan Enter untuk mulai
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !welcome.classList.contains('hidden')) {
+        startBtn.click();
+    }
+});
 
         // ================================================================
         // TAB NAVIGASI
