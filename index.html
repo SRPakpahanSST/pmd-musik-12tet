@@ -2966,7 +2966,7 @@ playResultBtn.addEventListener('click', async function() {
         compressor.connect(ctx.destination);
 
         // === TEMPO NORMAL: 120 BPM ===
-        const TEMPO_BPM = 120;
+        const TEMPO_BPM = 140;
         const INTERVAL = 60 / TEMPO_BPM;
         const DURATION = INTERVAL * 0.9; // Durasi lebih panjang
 
@@ -2997,7 +2997,7 @@ playResultBtn.addEventListener('click', async function() {
             const sustain = 0.9;       // Ditingkatkan ke 0.9
             const release = 0.03;
 
-            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.setValueAtTime(0.08, now);
             gain.gain.linearRampToValueAtTime(1.2, now + attack); // Attack ke 1.2
             gain.gain.exponentialRampToValueAtTime(sustain, now + attack + decay);
             gain.gain.exponentialRampToValueAtTime(0.001, now + DURATION - release);
