@@ -2979,7 +2979,7 @@ playResultBtn.addEventListener('click', async function() {
 
         // === MASTER GAIN DENGAN VOLUME KUAT ===
         const masterGain = ctx.createGain();
-        masterGain.gain.setValueAtTime(3.0, ctx.currentTime); // Volume kuat
+        masterGain.gain.setValueAtTime(4.0, ctx.currentTime); // Volume kuat
         
         // === COMPRESSOR UNTUK SUARA KONSISTEN KERAS ===
         const compressor = ctx.createDynamicsCompressor();
@@ -3007,7 +3007,7 @@ playResultBtn.addEventListener('click', async function() {
         
         // === REVERB MIX ===
         const dryGain = ctx.createGain();
-        dryGain.gain.setValueAtTime(0.5, ctx.currentTime);
+        dryGain.gain.setValueAtTime(0.8, ctx.currentTime);
         const wetGain = ctx.createGain();
         wetGain.gain.setValueAtTime(0.5, ctx.currentTime);
         
@@ -3018,7 +3018,7 @@ playResultBtn.addEventListener('click', async function() {
         wetGain.connect(ctx.destination);
 
         // === TEMPO CEPAT: 160 BPM ===
-        const TEMPO_BPM = 160;
+        const TEMPO_BPM = 180;
         const INTERVAL = 60 / TEMPO_BPM; // 0.375 detik per nada
         const DURATION = INTERVAL * 0.65;
 
@@ -3065,7 +3065,7 @@ playResultBtn.addEventListener('click', async function() {
             const release = 0.03;
             const duration = DURATION * (0.75 + Math.random() * 0.25);
 
-            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.setValueAtTime(0.08, now);
             gain.gain.linearRampToValueAtTime(targetVolume * 1.3, now + attack);
             gain.gain.exponentialRampToValueAtTime(sustain, now + attack + decay);
             gain.gain.exponentialRampToValueAtTime(0.001, now + duration - release);
