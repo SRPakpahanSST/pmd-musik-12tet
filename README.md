@@ -10,6 +10,8 @@ https://img.shields.io/badge/License-MIT-green
 
 ---
 
+Akses aplikasi di: https://srpakpahansst.github.io/pmd-musik-12tet/
+
 📖 Tentang Aplikasi
 
 PMD Musik 12 TET adalah aplikasi web interaktif untuk eksplorasi sistem musik 12-Tone Equal Temperament (12-TET) dengan 20 nada per oktaf — sebuah inovasi dalam dunia musik mikrotonal.
