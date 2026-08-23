@@ -600,6 +600,14 @@
             border-top: 1px solid #222;
             padding-top: 15px;
         }
+        .footer-note a {
+            color: #f5a623;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .footer-note a:hover {
+            text-decoration: underline;
+        }
 
         .tab-content-main::-webkit-scrollbar { width: 6px; }
         .tab-content-main::-webkit-scrollbar-track { background: #0d0d1a; }
@@ -1277,62 +1285,39 @@
                     <button class="tab-btn" data-tab="freq">Frekuensi</button>
                     <button class="tab-btn" data-tab="skala">Skala</button>
                     <button class="tab-btn" data-tab="chord">Akord</button>
+                    <button class="tab-btn" data-tab="simulasi">🎵 Simulasi Lagu</button>
                     <button class="tab-btn" data-tab="tentang">Tentang</button>
                 </div>
                 <div class="tab-content-info" id="tabContent"></div>
             </div>
 
             <div class="footer-note">
-    Berdasarkan Karya Tulis Ilmiah: 
-    <a href="https://github.com/SRPakpahanSST/pmd-musik-12tet/blob/f02799fc79dce4e9089721d248c97896764538e6/Karya_Tulis_12TET_20Nada.md" 
-       target="_blank" 
-       style="color:#f5a623; text-decoration:none; font-weight:600;">
-        Eksplorasi Musik Sistem 12-TET (20 Nada per Oktaf)
-    </a> 
-    — Sukma Riadi Pakpahan, SST
-</div>
+                <div style="margin-bottom: 5px;">
+                    📄 <a href="https://github.com/SRPakpahanSST/pmd-musik-12tet/blob/f02799fc79dce4e9089721d248c97896764538e6/Karya_Tulis_12TET_20Nada.md" target="_blank">Baca Karya Ilmiah Lengkap</a>
+                </div>
+                <div style="margin-bottom: 5px;">
+                    🎵 <a href="https://musikbarupmd.blogspot.com/2024/11/simulasi-contoh-lagu-memakai-audio.html?m=1" target="_blank">Simulasi Lagu KJ 33 (Sistem 12-TET 20 Nada)</a>
+                </div>
+                <div style="margin-top: 8px; font-size: 0.75rem; color: #666;">
+                    Berdasarkan Karya Tulis Ilmiah: Eksplorasi Musik Sistem 12-TET (20 Nada per Oktaf) — Sukma Riadi Pakpahan, SST
+                </div>
+            </div>
 
         </div>
     </div>
 
     <script>
         // ================================================================
-        // SPLASH → APP (DIPERBAIKI DENGAN FALLBACK)
+        // SPLASH → APP
         // ================================================================
         const welcome = document.getElementById('welcome');
         const app = document.getElementById('app');
         const startBtn = document.getElementById('startBtn');
 
-        // Validasi: pastikan tombol ditemukan
-        if (!startBtn) {
-            console.error('❌ Tombol "Mulai" tidak ditemukan!');
-        } else {
-            console.log('✅ Tombol "Mulai" ditemukan');
-            
-            startBtn.addEventListener('click', function(e) {
-                console.log('🖱️ Tombol Mulai diklik');
-                try {
-                    // Sembunyikan welcome, tampilkan app
-                    welcome.classList.add('hidden');
-                    app.classList.add('show');
-                    console.log('✅ Aplikasi dimulai');
-                    
-                    // Inisialisasi audio
-                    if (typeof initAudio === 'function') {
-                        initAudio();
-                    }
-                } catch (error) {
-                    console.error('❌ Error saat memulai:', error);
-                    alert('Terjadi kesalahan: ' + error.message);
-                }
-            });
-        }
-
-        // Fallback 1: tekan Enter untuk mulai
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && startBtn && !welcome.classList.contains('hidden')) {
-                startBtn.click();
-            }
+        startBtn.addEventListener('click', function() {
+            welcome.classList.add('hidden');
+            app.classList.add('show');
+            initAudio();
         });
 
         // ================================================================
@@ -3227,32 +3212,78 @@ Hasilkan notasi nada:`;
         // ================================================================
         const tabContent = document.getElementById('tabContent');
         const tabData = {
-            teori: `<h3>🎼 Dasar Teoritis</h3><p><b>Rumus:</b> f_n = 440 × 3^(n/20), A4 = 440 Hz (acuan)</p><p><b>Oktaf:</b> f_oktaf berikutnya = f_oktaf sebelumnya × 3</p><h3>🎵 Skala Mayor (E=1)</h3><p>E - F - G - H - I - J - K - A - B - C - D - E</p><h3>🎵 Skala Minor (A=1)</h3><p>A - B - C - D - E - F - G - H - I - J - K - A</p>`,
-            freq: `<h3>📊 Frekuensi (Oktaf 4)</h3><table class="freq-table"><thead><tr><th>Nada</th><th>Hz</th><th>Tuts</th></tr></thead><tbody>
-                <tr><td class="note-name">E4</td><td>215.44</td><td>⬜</td></tr>
-                <tr><td class="note-name black-note">E#4</td><td>227.60</td><td>⬛</td></tr>
-                <tr><td class="note-name">F4</td><td>240.46</td><td>⬜</td></tr>
-                <tr><td class="note-name black-note">F#4</td><td>254.03</td><td>⬛</td></tr>
-                <tr><td class="note-name">G4</td><td>268.38</td><td>⬜</td></tr>
-                <tr><td class="note-name black-note">G#4</td><td>283.53</td><td>⬛</td></tr>
-                <tr><td class="note-name">H4</td><td>299.54</td><td>⬜</td></tr>
-                <tr><td class="note-name black-note">H#4</td><td>316.46</td><td>⬛</td></tr>
-                <tr><td class="note-name">I4</td><td>334.33</td><td>⬜</td></tr>
-                <tr><td class="note-name">J4</td><td>353.21</td><td>⬜</td></tr>
-                <tr><td class="note-name black-note">J#4</td><td>373.15</td><td>⬛</td></tr>
-                <tr><td class="note-name">K4</td><td>394.22</td><td>⬜</td></tr>
-                <tr><td class="note-name black-note">K#4</td><td>416.48</td><td>⬛</td></tr>
-                <tr><td class="note-name" style="color:#f5a623;font-weight:bold;">A4</td><td style="color:#f5a623;font-weight:bold;">440.00</td><td>⬜</td></tr>
-                <tr><td class="note-name black-note">A#4</td><td>464.85</td><td>⬛</td></tr>
-                <tr><td class="note-name">B4</td><td>491.09</td><td>⬜</td></tr>
-                <tr><td class="note-name black-note">B#4</td><td>518.83</td><td>⬛</td></tr>
-                <tr><td class="note-name">C4</td><td>548.12</td><td>⬜</td></tr>
-                <tr><td class="note-name black-note">C#4</td><td>579.07</td><td>⬛</td></tr>
-                <tr><td class="note-name">D4</td><td>611.77</td><td>⬜</td></tr>
-            </tbody></table><p style="font-size:0.8rem;color:#888;font-weight:bold;">A4 = 440 Hz (acuan) | Oktaf berikutnya × 3</p>`,
-            skala: `<h3>🎹 Skala Mayor (E=1)</h3><p>E - F - G - H - I - J - K - A - B - C - D - E</p><p>Interval: 1 1 1 1 ½ 1 1 1 1 1 ½</p><h3>🎹 Skala Minor (A=1)</h3><p>A - B - C - D - E - F - G - H - I - J - K - A</p><p>Interval: 1 1 1 ½ 1 1 1 1 ½ 1 1</p>`,
-            chord: `<h3>🎵 Akord</h3><p>Akord dibangun dari 20 not dengan terts (mayor=4, minor=3) dan kwint (7).</p><p>Rentang akord: C2 – B#3 (20 nada). Tuts putih = Mayor, tuts hitam = Minor.</p><p>Contoh: E mayor = E, G#, K#; E# minor = E#, G##? (gunakan 20-TET)</p>`,
-            tentang: `<h3>📖 Tentang Aplikasi</h3><p>Berdasarkan karya tulis Sukma Riadi Pakpahan, SST.</p><p><b>Fitur:</b> 8 instrumen, Reverb, Delay, Amplifier, 3/4/5 oktaf, Akord (C2-B#3) sustain dengan piano, AI Composer, AI Transcriber (dengan mikrofon), Chord Progression.</p><p><b>Tombol Mayor/Minor:</b> Memutar ulang melodi rekaman dengan durasi dan tempo yang sama persis.</p><p><b>Gubah dari Melodi:</b> Di tab Keyboard, pilih mode Input "Melodi", tulis deskripsi, lalu Generate & Play untuk menggubah melodi rekaman.</p><p><b>Akord saat melodi mengalun:</b> Beralih ke mode Akord saat melodi diputar, tekan tuts akord – akord baru menggantikan yang lama, melodi tetap berjalan.</p><p><b>Keyboard otomatis fokus ke C2-B#3 saat melodi diputar</b> untuk memudahkan akses akord (tidak termasuk C3 dan D3).</p><p><b>Tombol Mayor/Minor otomatis mengaktifkan mode Akord</b>, dan setelah selesai kembali ke Nada Tunggal.</p><p><b>Sistem:</b> 12-TET 20 Nada per Oktaf | A4 = 440 Hz</p>`
+            teori: `<h3>🎼 Dasar Teoritis</h3>
+<p><b>Rumus:</b> fₙ = 440 × 3^(n/20), A4 = 440 Hz (acuan)</p>
+<p><b>Oktaf:</b> f_oktaf_berikutnya = f_oktaf_sebelumnya × 3</p>
+<h3>🎵 Penemuan Nada Dasar Baru</h3>
+<p>Nada tambahan ditemukan di antara G#4 (415.30 Hz) dan A4 (440 Hz) pada sistem 8-TET. 
+Nada ini berfrekuensi <b>416.49 Hz</b> dan menjadi nada dasar natural minor yang baru pada sistem 12-TET (20 nada per oktaf).</p>
+<h3>🎵 Skala Mayor (E=1)</h3>
+<p>E - F - G - H - I - J - K - A - B - C - D - E</p>
+<p>Interval: 1 1 1 1 ½ 1 1 1 1 1 ½</p>
+<h3>🎵 Skala Minor (A=1)</h3>
+<p>A - B - C - D - E - F - G - H - I - J - K - A</p>
+<p>Interval: 1 1 1 ½ 1 1 1 1 ½ 1 1</p>`,
+            freq: `<h3>📊 Frekuensi (Oktaf 4)</h3>
+<table class="freq-table"><thead><tr><th>Nada</th><th>Hz</th><th>Tuts</th></tr></thead><tbody>
+<tr><td class="note-name">E4</td><td>215.44</td><td>⬜</td></tr>
+<tr><td class="note-name black-note">E#4</td><td>227.60</td><td>⬛</td></tr>
+<tr><td class="note-name">F4</td><td>240.46</td><td>⬜</td></tr>
+<tr><td class="note-name black-note">F#4</td><td>254.03</td><td>⬛</td></tr>
+<tr><td class="note-name">G4</td><td>268.38</td><td>⬜</td></tr>
+<tr><td class="note-name black-note">G#4</td><td>283.53</td><td>⬛</td></tr>
+<tr><td class="note-name">H4</td><td>299.54</td><td>⬜</td></tr>
+<tr><td class="note-name black-note">H#4</td><td>316.46</td><td>⬛</td></tr>
+<tr><td class="note-name">I4</td><td>334.33</td><td>⬜</td></tr>
+<tr><td class="note-name">J4</td><td>353.21</td><td>⬜</td></tr>
+<tr><td class="note-name black-note">J#4</td><td>373.15</td><td>⬛</td></tr>
+<tr><td class="note-name">K4</td><td>394.22</td><td>⬜</td></tr>
+<tr><td class="note-name black-note">K#4</td><td>416.48</td><td>⬛</td></tr>
+<tr><td class="note-name" style="color:#f5a623;font-weight:bold;">A4</td><td style="color:#f5a623;font-weight:bold;">440.00</td><td>⬜</td></tr>
+<tr><td class="note-name black-note">A#4</td><td>464.85</td><td>⬛</td></tr>
+<tr><td class="note-name">B4</td><td>491.09</td><td>⬜</td></tr>
+<tr><td class="note-name black-note">B#4</td><td>518.83</td><td>⬛</td></tr>
+<tr><td class="note-name">C4</td><td>548.12</td><td>⬜</td></tr>
+<tr><td class="note-name black-note">C#4</td><td>579.07</td><td>⬛</td></tr>
+<tr><td class="note-name">D4</td><td>611.77</td><td>⬜</td></tr>
+</tbody></table>
+<p style="font-size:0.8rem;color:#888;font-weight:bold;">A4 = 440 Hz (acuan) | Oktaf berikutnya × 3</p>`,
+            skala: `<h3>🎹 Skala Mayor (E=1)</h3>
+<p>E - F - G - H - I - J - K - A - B - C - D - E</p>
+<p>Interval: 1 1 1 1 ½ 1 1 1 1 1 ½</p>
+<h3>🎹 Skala Minor (A=1)</h3>
+<p>A - B - C - D - E - F - G - H - I - J - K - A</p>
+<p>Interval: 1 1 1 ½ 1 1 1 1 ½ 1 1</p>`,
+            chord: `<h3>🎵 Akord</h3>
+<p>Akord dibangun dari 20 not dengan terts (mayor=4, minor=3) dan kwint (7).</p>
+<p>Rentang akord: C2 – B#3 (20 nada). Tuts putih = Mayor, tuts hitam = Minor.</p>
+<p>Contoh: E mayor = E, G#, K#; E# minor = E#, G##? (gunakan 20-TET)</p>`,
+            simulasi: `<h3>🎵 Simulasi Lagu KJ 33 (Sistem 12-TET 20 Nada)</h3>
+<p>Kunjungi artikel blog untuk melihat simulasi lengkap lagu <b>"SuaraMu Kudengar" (KJ 33)</b> yang telah dikonversi ke sistem 12-TET 20 nada per oktaf.</p>
+<p>Artikel ini berisi:</p>
+<ul>
+    <li>Notasi angka lagu dalam sistem 8-TET dan 12-TET</li>
+    <li>Penjelasan konversi nada</li>
+    <li>Kode Python untuk memainkan lagu dengan instrumen piano (ADSR)</li>
+    <li>Perbandingan frekuensi dan ekspresi musik</li>
+</ul>
+<p style="margin-top:15px;">
+    <a href="https://musikbarupmd.blogspot.com/2024/11/simulasi-contoh-lagu-memakai-audio.html?m=1" 
+       target="_blank" 
+       style="display:inline-block; padding:10px 20px; background:#e94560; color:#fff; border-radius:25px; text-decoration:none; font-weight:600;">
+        🎵 Buka Simulasi Lagu
+    </a>
+</p>
+<p style="margin-top:10px; color:#888; font-size:0.85rem;">💡 Klik tombol di atas untuk membuka artikel di tab baru.</p>`,
+            tentang: `<h3>📖 Tentang Aplikasi</h3>
+<p>Berdasarkan karya tulis Sukma Riadi Pakpahan, SST.</p>
+<p><b>Fitur:</b> 8 instrumen, Reverb, Delay, Amplifier, 3/4/5 oktaf, Akord (C2-B#3) sustain dengan piano, AI Composer, AI Transcriber (dengan mikrofon), Chord Progression.</p>
+<p><b>Tombol Mayor/Minor:</b> Memutar ulang melodi rekaman dengan durasi dan tempo yang sama persis.</p>
+<p><b>Gubah dari Melodi:</b> Di tab Keyboard, pilih mode Input "Melodi", tulis deskripsi, lalu Generate & Play untuk menggubah melodi rekaman.</p>
+<p><b>Akord saat melodi mengalun:</b> Beralih ke mode Akord saat melodi diputar, tekan tuts akord – akord baru menggantikan yang lama, melodi tetap berjalan.</p>
+<p><b>Keyboard otomatis fokus ke C2-B#3 saat melodi diputar</b> untuk memudahkan akses akord (tidak termasuk C3 dan D3).</p>
+<p><b>Tombol Mayor/Minor otomatis mengaktifkan mode Akord</b>, dan setelah selesai kembali ke Nada Tunggal.</p>
+<p><b>Sistem:</b> 12-TET 20 Nada per Oktaf | A4 = 440 Hz</p>`
         };
 
         function renderTab(tabId) {
@@ -3342,6 +3373,7 @@ Hasilkan notasi nada:`;
                     <li><b>Frekuensi</b>: tabel frekuensi nada di oktaf 4.</li>
                     <li><b>Skala</b>: mayor dan minor dengan interval.</li>
                     <li><b>Akord</b>: referensi pembentukan akord.</li>
+                    <li><b>Simulasi Lagu</b>: konversi lagu KJ 33 ke sistem 12-TET.</li>
                     <li><b>Tentang</b>: informasi aplikasi dan penulis.</li>
                 </ul>
                 <p>Gunakan tab-tab ini untuk memahami teori di balik sistem musik baru ini.</p>
