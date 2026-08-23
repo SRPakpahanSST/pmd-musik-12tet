@@ -2919,35 +2919,6 @@ Hasilkan notasi nada:`;
             updateTranscriptionDisplay();
         });
 
-        // ===== PLAY RESULT - DENGAN VOLUME MAKSIMAL & TEMPO NORMAL =====
-playResultBtn.addEventListener('click', async function() {
-    if (isTranscriberPlaying) {
-        transcribePlayTimeouts.forEach(t => clearTimeout(t));
-        transcribePlayTimeouts = [];
-        isTranscriberPlaying = false;
-        playResultBtn.textContent = '▶ Play Hasil';
-        statusEl.textContent = '⏹ Pemutaran dihentikan.';
-        return;
-    }
-
-    if (detectedNotes.length === 0) {
-        statusEl.textContent = '⚠️ Tidak ada nada yang terdeteksi. Rekam suara terlebih dahulu!';
-        return;
-    }
-
-    try {
-        const ctx = new(window.AudioContext || window.webkitAudioContext)();
-        if (ctx.state === 'suspended') {
-            await ctx.resume();
-            console.log('✅ AudioContext resumed');
-        }
-
-        const validNotes = detectedNotes.filter(n => n.freq > 20 && n.freq < 20000);
-        if (validNotes.length === 0) {
-            statusEl.textContent = '⚠️ Tidak ada nada valid untuk diputar.';
-            return;
-        }
-
         // ===== PLAY RESULT - TERHUBUNG KE AMPLIFIER GLOBAL =====
 playResultBtn.addEventListener('click', async function() {
     if (isTranscriberPlaying) {
@@ -2978,9 +2949,7 @@ playResultBtn.addEventListener('click', async function() {
             return;
         }
 
-        // === HUBUNGKAN KE masterGain GLOBAL (agar Amplifier berfungsi) ===
-        // masterGain sudah ada dari setupEffects()
-        // Jika masterGain belum ada, buat baru
+        // === HUBUNGKAN KE masterGain GLOBAL ===
         let outputGain = masterGain;
         if (!outputGain) {
             outputGain = ctx.createGain();
@@ -2988,7 +2957,7 @@ playResultBtn.addEventListener('click', async function() {
             outputGain.connect(ctx.destination);
         }
 
-        // === REVERB (Gema) ===
+        // === REVERB ===
         const convolver = ctx.createConvolver();
         const impulseLength = 1.2;
         const sampleRate = ctx.sampleRate;
@@ -3056,10 +3025,7 @@ playResultBtn.addEventListener('click', async function() {
             gain.gain.exponentialRampToValueAtTime(sustain, now + attack + decay);
             gain.gain.exponentialRampToValueAtTime(0.001, now + duration - release);
 
-            // === CONNECT KE MASTER GAIN GLOBAL ===
             osc.connect(gain);
-            
-            // Hubungkan ke masterGain (bukan langsung ke destination)
             gain.connect(dryGain);
             gain.connect(wetGain);
             
@@ -3074,6 +3040,26 @@ playResultBtn.addEventListener('click', async function() {
                 try { vibratoOsc.stop(); } catch(e) {}
             }, duration * 1000 + 50);
         });
+
+        isTranscriberPlaying = true;
+        playResultBtn.textContent = '⏹ Stop';
+        const totalTime = totalNotes * INTERVAL + 0.3;
+        statusEl.innerHTML = `🔊 Memutar ${totalNotes} nada (Amplifier aktif!)...`;
+
+        const timeout = setTimeout(() => {
+            isTranscriberPlaying = false;
+            playResultBtn.textContent = '▶ Play Hasil';
+            statusEl.innerHTML = '✅ Pemutaran selesai.';
+        }, totalTime * 1000 + 400);
+        transcribePlayTimeouts.push(timeout);
+
+    } catch (error) {
+        console.error('❌ Error saat play:', error);
+        statusEl.textContent = '❌ Gagal memutar: ' + error.message;
+        playResultBtn.textContent = '▶ Play Hasil';
+        isTranscriberPlaying = false;
+    }
+});
 
         isTranscriberPlaying = true;
         playResultBtn.textContent = '⏹ Stop';
