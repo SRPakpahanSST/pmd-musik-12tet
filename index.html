@@ -3124,27 +3124,7 @@ playResultBtn.addEventListener('click', async function() {
     }
 });
 
-        isTranscriberPlaying = true;
-        playResultBtn.textContent = '⏹ Stop';
-        statusEl.innerHTML = `🔊 Memutar ${validNotes.length} nada dengan volume MAKSIMAL...`;
-
-        const totalTime = validNotes[validNotes.length - 1].time + 0.6;
-        const timeout = setTimeout(() => {
-            isTranscriberPlaying = false;
-            playResultBtn.textContent = '▶ Play Hasil';
-            statusEl.innerHTML = '✅ Pemutaran selesai.';
-            if (ctx.state !== 'closed') ctx.close();
-        }, totalTime * 1000 + 300);
-        transcribePlayTimeouts.push(timeout);
-
-    } catch (error) {
-        console.error('❌ Error saat play:', error);
-        statusEl.textContent = '❌ Gagal memutar: ' + error.message;
-        playResultBtn.textContent = '▶ Play Hasil';
-        isTranscriberPlaying = false;
-    }
-});
-
+        
         isTranscriberPlaying = true;
         playResultBtn.textContent = '⏹ Stop';
         statusEl.innerHTML = `🎵 Memutar ${validNotes.length} nada dengan volume lebih keras...`;
