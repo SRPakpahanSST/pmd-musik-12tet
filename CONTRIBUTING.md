@@ -360,7 +360,7 @@ Jika Anda memiliki pertanyaan lebih lanjut, silakan hubungi:
 
 Platform Link
 GitHub Issues Buat Issue
-Email [sukma.riadi.pakpahan@gmail.com]
+Email pakpahan.ministry@gmail.com
 Blog musikbarupmd.blogspot.com
 
 ---
