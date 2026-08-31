@@ -1160,6 +1160,109 @@
                         </select>
                     </div>
 
+                    <!-- ====== SEMUA SIMBOL NOTASI ANGKA (LENGKAP) ====== -->
+                    <div class="symbol-palette">
+
+                        <!-- ===== 1. ANGKA DASAR NOTASI (1-11) ===== -->
+                        <button onclick="insertSymbol('1')" title="Nada 1">1</button>
+                        <button onclick="insertSymbol('2')" title="Nada 2">2</button>
+                        <button onclick="insertSymbol('3')" title="Nada 3">3</button>
+                        <button onclick="insertSymbol('4')" title="Nada 4">4</button>
+                        <button onclick="insertSymbol('5')" title="Nada 5">5</button>
+                        <button onclick="insertSymbol('6')" title="Nada 6">6</button>
+                        <button onclick="insertSymbol('7')" title="Nada 7">7</button>
+                        <button onclick="insertSymbol('8')" title="Nada 8 (20-nada)">8</button>
+                        <button onclick="insertSymbol('9')" title="Nada 9 (20-nada)">9</button>
+                        <button onclick="insertSymbol('10')" title="Nada 10 (20-nada)">10</button>
+                        <button onclick="insertSymbol('11')" title="Nada 11 (20-nada)">11</button>
+
+                        <!-- ===== 2. TANDA OKTAF (TITIK DI ATAS DAN BAWAH) ===== -->
+                        <button onclick="insertSymbol('˙')" title="Oktaf tinggi 1 (titik di atas)">˙</button>
+                        <button onclick="insertSymbol('¨')" title="Oktaf tinggi 2 (dua titik di atas)">¨</button>
+                        <button onclick="insertSymbol('•')" title="Staccato (titik)">•</button>
+                        <!-- Titik di bawah (oktaf rendah) menggunakan kombinasi karakter -->
+                        <button onclick="insertSymbol('1̣')" title="Oktaf rendah 1 (titik di bawah)">1̣</button>
+                        <button onclick="insertSymbol('2̣')" title="Oktaf rendah 2 (titik di bawah)">2̣</button>
+                        <button onclick="insertSymbol('3̣')" title="Oktaf rendah 3 (titik di bawah)">3̣</button>
+
+                        <!-- ===== 3. GARIS RITME (BEAM) ===== -->
+                        <button onclick="insertSymbol('▔')" title="Satu garis di atas (not 1/8)">▔</button>
+                        <button onclick="insertSymbol('▔▁')" title="Dua garis di atas (not 1/16)">▔▁</button>
+                        <button onclick="insertSymbol('‾')" title="Satu garis alternatif (not 1/8)">‾</button>
+                        <button onclick="insertSymbol('‾_')" title="Dua garis alternatif (not 1/16)">‾_</button>
+                        <button onclick="insertSymbol('_')" title="Garis bawah (not 1/2 ketuk)">_</button>
+                        <button onclick="insertSymbol('__')" title="Dua garis bawah (not 1/4 ketuk)">__</button>
+                        <!-- Titik perpanjangan -->
+                        <button onclick="insertSymbol('.')" title="Titik perpanjangan (1 ketuk + 1/2)">.</button>
+                        <button onclick="insertSymbol('..')" title="Dua titik perpanjangan (1 ketuk + 3/4)">..</button>
+                        <!-- Tanda triplet (ditulis manual) -->
+                        <button onclick="insertSymbol('3')" title="Triplet (3 nada dalam 2 ketuk)">3</button>
+
+                        <!-- ===== 4. TANDA BIRAMA, ULANG, STRUKTUR ===== -->
+                        <button onclick="insertSymbol('|')" title="Garis birama">|</button>
+                        <button onclick="insertSymbol('‖')" title="Garis birama ganda">‖</button>
+                        <button onclick="insertSymbol('(|')" title="Birama buka">(|</button>
+                        <button onclick="insertSymbol('|)')" title="Birama tutup">|)</button>
+                        <button onclick="insertSymbol('||:')" title="Awal repeat">||:</button>
+                        <button onclick="insertSymbol(':||')" title="Akhir repeat">:||</button>
+                        <button onclick="insertSymbol('||')" title="Tanda tutup lagu (double bar)">||</button>
+                        <button onclick="insertSymbol('𝄋')" title="Segno (tanda lompat)">𝄋</button>
+                        <button onclick="insertSymbol('𝄌')" title="Coda (tanda lompat)">𝄌</button>
+                        <button onclick="insertSymbol('D.S.')" title="Dal Segno (kembali ke Segno)">D.S.</button>
+                        <button onclick="insertSymbol('D.C.')" title="Da Capo (kembali ke awal)">D.C.</button>
+                        <button onclick="insertSymbol('To Coda')" title="Lompat ke Coda">To Coda</button>
+
+                        <!-- ===== 5. EKSPRESI, ARTIKULASI, DINAMIKA ===== -->
+                        <button onclick="insertSymbol('>')" title="Aksen (tekan kuat)">></button>
+                        <button onclick="insertSymbol('^')" title="Aksen (tekan kuat)">^</button>
+                        <button onclick="insertSymbol('<')" title="Crescendo (menguat)"><</button>
+                        <button onclick="insertSymbol('>')" title="Decrescendo (melemah)">></button>
+                        <button onclick="insertSymbol('tr')" title="Trill">tr</button>
+                        <button onclick="insertSymbol('~')" title="Trill (alternatif)">~</button>
+                        <button onclick="insertSymbol('⌣')" title="Fermata (tahan)">⌣</button>
+                        <button onclick="insertSymbol('𝄐')" title="Fermata (simbol musik)">𝄐</button>
+                        <button onclick="insertSymbol("'")" title="Aksen (tanda petik)">'</button>
+
+                        <!-- ===== 6. SLUR, LEGATO, GLISSANDO ===== -->
+                        <button onclick="insertSymbol('/')" title="Slur (legato)">/</button>
+                        <button onclick="insertSymbol('\\')" title="Slur terbalik">\</button>
+                        <button onclick="insertSymbol('‿')" title="Legato bawah">‿</button>
+                        <button onclick="insertSymbol('↗')" title="Glissando naik">↗</button>
+                        <button onclick="insertSymbol('↘')" title="Glissando turun">↘</button>
+
+                        <!-- ===== 7. TANDA ARAH NADA ===== -->
+                        <button onclick="insertSymbol('↑')" title="Nada naik">↑</button>
+                        <button onclick="insertSymbol('↓')" title="Nada turun">↓</button>
+
+                        <!-- ===== 8. KRUSIS, MOL, NATURAL ===== -->
+                        <button onclick="insertSymbol('♯')" title="Kruis (sharp)">♯</button>
+                        <button onclick="insertSymbol('♭')" title="Mol (flat)">♭</button>
+                        <button onclick="insertSymbol('♮')" title="Natural (pugar)">♮</button>
+
+                        <!-- ===== 9. NADA DIAM (REST) ===== -->
+                        <button onclick="insertSymbol('0')" title="Nada diam (rest)">0</button>
+                        <button onclick="insertSymbol('0_')" title="Nada diam 1/2 ketuk">0_</button>
+                        <button onclick="insertSymbol('0.')" title="Nada diam 1,5 ketuk">0.</button>
+
+                        <!-- ===== 10. ISTILAH TEMPO & EKSPRESI (TEKS) ===== -->
+                        <button onclick="insertSymbol('Allegro')" title="Tempo cepat">Allegro</button>
+                        <button onclick="insertSymbol('Moderato')" title="Tempo sedang">Moderato</button>
+                        <button onclick="insertSymbol('Adagio')" title="Tempo lambat">Adagio</button>
+                        <button onclick="insertSymbol('Presto')" title="Tempo sangat cepat">Presto</button>
+                        <button onclick="insertSymbol('rit.')" title="Ritardando (melambat)">rit.</button>
+                        <button onclick="insertSymbol('accel.')" title="Accelerando (mempercepat)">accel.</button>
+                        <button onclick="insertSymbol('a tempo')" title="Kembali ke tempo semula">a tempo</button>
+                        <button onclick="insertSymbol('pp')" title="Pianissimo (sangat lembut)">pp</button>
+                        <button onclick="insertSymbol('p')" title="Piano (lembut)">p</button>
+                        <button onclick="insertSymbol('mf')" title="Mezzo forte (sedang kuat)">mf</button>
+                        <button onclick="insertSymbol('f')" title="Forte (kuat)">f</button>
+                        <button onclick="insertSymbol('ff')" title="Fortissimo (sangat kuat)">ff</button>
+
+                    </div>
+
+
+
+
                     <!-- Simbol Angka 1-11 -->
                     <div class="symbol-palette">
                         <button onclick="insertSymbol('1')">1</button>
